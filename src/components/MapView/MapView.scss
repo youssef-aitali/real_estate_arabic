@@ -1,0 +1,190 @@
+@import "node_modules/bootstrap/scss/bootstrap";
+
+#map-container {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  font-family: "Almarai", sans-serif;
+}
+
+.ol-control button {
+  background-color: #225262;
+}
+
+.ol-scale-line {
+  background-color: #225262;
+  direction: ltr;
+}
+
+.hiddenOverlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr;
+  grid-template-rows: auto 25%;
+}
+
+.layersContainer {
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  justify-self: end;
+  align-self: start;
+  margin: 0 0.5em;
+  padding: 1em;
+  z-index: 1;
+  background-color: #225262;
+  direction: rtl;
+}
+
+.form-check-label {
+  margin-right: 1em;
+}
+
+.controlsContainer {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  align-self: end;
+  margin: 0.5em;
+  z-index: 1;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.controlsContainer button {
+  background-color: #225262;
+  color: white;
+}
+
+.custom-mouse-position {
+  @extend .btn;
+  @extend .btn-light;
+  @extend .shadow-sm;
+  position: absolute;
+  bottom: 3em;
+  left: 0.8em;
+  padding: 2px;
+  font-size: 12px;
+  direction: ltr;
+  border: 1px solid gray;
+}
+
+.layersContainer {
+  position: absolute;
+  z-index: 1;
+  top: 1em;
+  height: 50px;
+  background-color: #79dfc1ab;
+}
+
+.ol-popup {
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  padding: 5px 15px 5px 40px;
+  border-radius: 10px;
+  border: 1px solid #cccccc;
+  bottom: 12px;
+  left: -50px;
+  min-width: max-content;
+  direction: rtl;
+}
+
+.ol-popup:after,
+.ol-popup:before {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.ol-popup:after {
+  border-top-color: white;
+  border-width: 10px;
+  left: 48px;
+  margin-left: -10px;
+}
+
+.ol-popup:before {
+  border-top-color: #cccccc;
+  border-width: 11px;
+  left: 48px;
+  margin-left: -11px;
+}
+
+.ol-popup-closer {
+  position: absolute;
+  top: 2px;
+  left: 8px;
+}
+
+.ol-popup-closer:after {
+  content: "✖";
+}
+
+.baseMapsDropDown {
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  justify-self: end;
+  align-self: end;
+  margin: 0.5em;
+  z-index: 1;
+  direction: rtl;
+  height: 40px;
+  background-color: #225262;
+  color: white;
+}
+
+.baseMapsDropDown:hover {
+  background-color: #225262;
+  color: white;
+}
+
+.ol-tooltip {
+  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  color: white;
+  padding: 4px 8px;
+  opacity: 0.7;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.ol-tooltip-measure {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.ol-tooltip-static {
+  background-color: #ffcc33;
+  color: black;
+  border: 1px solid white;
+}
+
+.ol-tooltip-measure:before,
+.ol-tooltip-static:before {
+  border-top: 6px solid rgba(0, 0, 0, 0.5);
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  margin-left: -7px;
+  left: 50%;
+}
+
+.ol-tooltip-static:before {
+  border-top-color: #ffcc33;
+}

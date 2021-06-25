@@ -1,0 +1,33 @@
+.myModal {
+  position: absolute;
+  background-color: rgba($color: #3f3e3e8e, $alpha: 0.5);
+  height: 100%;
+  width: 100%;
+  z-index: 2;
+  font-family: "Almarai", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  direction: rtl;
+}
+
+.modal-dialog {
+  max-width: 70vw !important;
+  width: 60vw !important;
+}
+
+.btn-close {
+  margin-left: 0 !important;
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 50%;
+  column-gap: 50px;
+}
+
+.modal-body h4 {
+  margin: 0.5em 0 1.5em 0;
+  text-align: center;
+}
