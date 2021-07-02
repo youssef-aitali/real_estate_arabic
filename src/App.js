@@ -1,8 +1,10 @@
 import React from 'react';
 import MapView from './components/MapView/MapView';
 import Navbar from './components/Navbar/Navbar';
-import SignUp from './components/SignUp/SignUp';
+import SignUpSignIn from './components/SignUp-SignIn/SignUp-SignIn.component';
 import Sidebar from './components/Sidebar/Sidebar';
+
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
 import './App.css'
 
@@ -12,9 +14,35 @@ class App extends React.Component {
 
     super(props);
     this.state = {
-      isSignUpModal : false
+      isSignUpModal : false,
+      currentUser: null
     }
 
+  }
+
+  unsubscribeFromAuth = null;
+
+  componentDidMount() {
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      if(userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+
+        userRef.onSnapshot(snapShot => {
+          this.setState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data()
+            }
+          });
+        })
+      } else {
+        this.setState({currentUser: userAuth});
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFromAuth();
   }
 
  showSignUpModal = () => {
@@ -33,8 +61,8 @@ class App extends React.Component {
 
     return (
       <div className="containerBox">
-        <Navbar showSignUpModal={this.showSignUpModal}/>
-        { this.state.isSignUpModal ? <SignUp hideSignUpModal={this.hideSignUpModal} /> : null }
+        <Navbar showSignUpModal={this.showSignUpModal} currentUser={this.state.currentUser}/>
+        { this.state.isSignUpModal ? <SignUpSignIn hideSignUpModal={this.hideSignUpModal} /> : null }
         <MapView />
         <Sidebar />
       </div>

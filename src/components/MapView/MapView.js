@@ -22,7 +22,8 @@ import Overlay from 'ol/Overlay';
 import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style';
 import Draw from 'ol/interaction/Draw';
 import { jsPDF } from "jspdf";
-import {getLength} from 'ol/sphere';
+import {getArea, getLength} from 'ol/sphere';
+import {LineString, Polygon} from 'ol/geom';
 import {unByKey} from 'ol/Observable';
 
 import 'ol/ol.css';
@@ -75,12 +76,6 @@ class MapView extends React.Component {
             })
         });
 
-        //Define VectorLayer for GPS position marker
-        this.gpsSource = new VectorSource();
-        this.gpsLayer = new VectorLayer({
-            source: this.gpsSource
-        });
-        this.map.addLayer(this.gpsLayer);
     }
 
     componentDidMount() {
@@ -217,8 +212,14 @@ class MapView extends React.Component {
 
     handleLocateMe = () => {
             
-        if(!this.gpsSource.isEmpty()) {
-            this.map.getView().fit(this.gpsSource.getExtent(), {
+        let gpsSource = new VectorSource();
+        let gpsLayer = new VectorLayer({
+            source: gpsSource
+        });
+        this.map.addLayer(gpsLayer);
+
+        if(!gpsSource.isEmpty()) {
+            this.map.getView().fit(gpsSource.getExtent(), {
               maxZoom: 16,
               duration: 250
             });
@@ -228,12 +229,12 @@ class MapView extends React.Component {
                 let accuracy = circular(coords, pos.coords.accuracy);
                 let center = new Point(coords);
                 
-                this.gpsSource.addFeatures([
+                gpsSource.addFeatures([
                       new Feature(accuracy.transform('EPSG:4326', this.map.getView().getProjection())),
                       new Feature(center.transform('EPSG:4326', this.map.getView().getProjection()))
                 ]);
               
-                this.map.getView().fit(this.gpsSource.getExtent(), {
+                this.map.getView().fit(gpsSource.getExtent(), {
                     maxZoom: 16,
                     duration: 250
                 });
@@ -338,37 +339,41 @@ class MapView extends React.Component {
         
     }
 
-    createMeasureTooltip = () => {
+    createMeasureTooltip = (measureWidgetParam) => {
 
-        let measureTooltipElement = document.createElement('div');
-        measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+        if (measureWidgetParam.measureTooltipElement) {
+            measureWidgetParam.measureTooltipElement.parentNode.removeChild(measureWidgetParam.measureTooltipElement);
+        }
 
-        let measureTooltip = new Overlay({
-            element: measureTooltipElement,
+        measureWidgetParam.measureTooltipElement = document.createElement('div');
+        measureWidgetParam.measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+
+        measureWidgetParam.measureTooltip = new Overlay({
+            element: measureWidgetParam.measureTooltipElement,
             offset: [0, -15],
             positioning: 'bottom-center',
         });
 
-        this.map.addOverlay(measureTooltip);
-
-        return {measureTooltipElement, measureTooltip};
+        this.map.addOverlay(measureWidgetParam.measureTooltip);
 
     }
 
-    createHelpTooltip = () => {
+    createHelpTooltip = (helpWidgetParam) => {
 
-        let helpTooltipElement = document.createElement('div');
-        helpTooltipElement.className = 'ol-tooltip hidden';
+        if (helpWidgetParam.helpTooltipElement) {
+            helpWidgetParam.helpTooltipElement.parentNode.removeChild(helpWidgetParam.helpTooltipElement);
+        }
+        
+        helpWidgetParam.helpTooltipElement = document.createElement('div');
+        helpWidgetParam.helpTooltipElement.className = 'ol-tooltip hidden';
 
-        let helpTooltip = new Overlay({
-            element: helpTooltipElement,
+        helpWidgetParam.helpTooltip = new Overlay({
+            element: helpWidgetParam.helpTooltipElement,
             offset: [15, 0],
             positioning: 'center-left',
         });
 
-        this.map.addOverlay(helpTooltip);
-
-        return {helpTooltipElement, helpTooltip};
+        this.map.addOverlay(helpWidgetParam.helpTooltip);
     }
 
     formatLength = (line) => {
@@ -382,6 +387,18 @@ class MapView extends React.Component {
         return output;
     }
 
+    formatArea = (polygon) => {
+        let area = getArea(polygon);
+        let output;
+        if (area > 10000) {
+          output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km<sup>2</sup>';
+        } else {
+          output = Math.round(area * 100) / 100 + ' ' + 'm<sup>2</sup>';
+        }
+        return output;
+      };
+      
+
     pointerMoveHandler = (evt, sketch, helpTooltipElement, helpTooltip) => {
        
         if (evt.dragging) {
@@ -391,7 +408,7 @@ class MapView extends React.Component {
         let helpMsg = 'انقر لبدء القياس';
 
         if (sketch) {
-            helpMsg = 'انقر لللإستمرار في القياس';
+            helpMsg = 'انقر مرة واحدة لللإستمرار ومرتين للتوقف ';
         }
        
         helpTooltipElement.innerHTML = helpMsg;
@@ -399,15 +416,36 @@ class MapView extends React.Component {
         helpTooltipElement.classList.remove('hidden');
 
       };
-      
 
-    handleMeasureLength = () => {
-
+    handleMeasureDrawing = (drawType) => {
+    
+        // Add vector Layer for drawings
         let source = new VectorSource();
+        var vector = new VectorLayer({
+            source: source,
+            style: new Style({
+              fill: new Fill({
+                color: 'rgba(255, 255, 255, 0.2)',
+              }),
+              stroke: new Stroke({
+                color: '#ffcc33',
+                width: 2,
+              }),
+              image: new CircleStyle({
+                radius: 7,
+                fill: new Fill({
+                  color: '#ffcc33',
+                }),
+              }),
+            }),
+        });
+          
+        this.map.addLayer(vector);
 
+        //Add drawing interaction to the map
         let draw = new Draw({
             source: source,
-            type: 'LineString',
+            type: drawType,
             style: new Style({
               fill: new Fill({
                 color: 'rgba(255, 255, 255, 0.2)',
@@ -432,17 +470,25 @@ class MapView extends React.Component {
         this.map.addInteraction(draw);
 
         //Create Measure and Help Tooltips
-       
-        let { measureTooltipElement,  measureTooltip} = this.createMeasureTooltip();
-        let { helpTooltipElement, helpTooltip } = this.createHelpTooltip();
+        let measureWidget = {
+            measureTooltipElement: null,
+            measureTooltip: null
+        };
+
+        let helpWidget = {
+            helpTooltipElement: null,
+            helpTooltip: null
+        }
+
+        this.createMeasureTooltip(measureWidget);
+        this.createHelpTooltip(helpWidget);
 
         //Manage measure drawing 
 
         let sketch;
+        this.map.on('pointermove', evt => this.pointerMoveHandler(evt, sketch, helpWidget.helpTooltipElement, helpWidget.helpTooltip));
+
         let listener;
-
-        this.map.on('pointermove', evt => this.pointerMoveHandler(evt, sketch, helpTooltipElement, helpTooltip));
-
         draw.on('drawstart', (evt) => {
             
             sketch = evt.feature;
@@ -451,21 +497,28 @@ class MapView extends React.Component {
 
             listener = sketch.getGeometry().on('change', (evt) => {
                 let geom = evt.target;
-                let output = this.formatLength(geom);
+                let output;
 
-                tooltipCoord = geom.getLastCoordinate();
-                measureTooltipElement.innerHTML = output;
-                measureTooltip.setPosition(tooltipCoord);
+                if (geom instanceof Polygon) {
+                    output = this.formatArea(geom);
+                    tooltipCoord = geom.getInteriorPoint().getCoordinates();
+                } else if (geom instanceof LineString) {
+                    output = this.formatLength(geom);
+                    tooltipCoord = geom.getLastCoordinate();
+                }
+
+                measureWidget.measureTooltipElement.innerHTML = output;
+                measureWidget.measureTooltip.setPosition(tooltipCoord);
             });
         
         });
 
         draw.on('drawend', () => {
-            measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
-            measureTooltip.setOffset([0, -7]);
+            measureWidget.measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+            measureWidget.measureTooltip.setOffset([0, -7]);
             sketch = null;
-            measureTooltipElement = null;
-            this.createMeasureTooltip();
+            measureWidget.measureTooltipElement = null;
+            this.createMeasureTooltip(measureWidget);
             unByKey(listener);
         });
     }
@@ -508,12 +561,12 @@ class MapView extends React.Component {
                             <OverlayTrigger
                                 placement="top"
                                 overlay={<Tooltip>قياس المسافة</Tooltip>}>
-                                    <button type="button" className="btn btn-light" onClick={this.handleMeasureLength}><i className="fas fa-ruler"></i></button>
+                                    <button type="button" className="btn btn-light" onClick={() => this.handleMeasureDrawing('LineString')}><i className="fas fa-ruler"></i></button>
                             </OverlayTrigger>
                             <OverlayTrigger
                                 placement="top"
                                 overlay={<Tooltip>قياس المساحة</Tooltip>}>
-                                    <button type="button" className="btn btn-light"><i className="fas fa-ruler-combined"></i></button>
+                                    <button type="button" className="btn btn-light" onClick={() => this.handleMeasureDrawing('Polygon')}><i className="fas fa-ruler-combined"></i></button>
                             </OverlayTrigger>
                             <OverlayTrigger
                                 placement="top"

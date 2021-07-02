@@ -1,7 +1,8 @@
 import './Navbar.scss';
 import logo from '../../assets/logo_reda_ben_wadi.png';
+import { auth } from '../../firebase/firebase.utils';
 
-const Navbar = ({ showSignUpModal }) => {
+const Navbar = ({ showSignUpModal, currentUser }) => {
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark">
@@ -13,13 +14,18 @@ const Navbar = ({ showSignUpModal }) => {
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav w-100 d-flex flex-row-reverse">
                         <li className="nav-item">
+                            {
+                                currentUser ?
+                                <button className="nav-link" onClick = {() => auth.signOut()}>تسجيل الخروج</button>
+                                :
                                 <button className="nav-link" onClick={showSignUpModal}>تسجيل الدخول</button>
+                            }
                         </li>
                         <li className="nav-item">
-                                <button className="nav-link">تواصل معنا</button>
+                            <button className="nav-link">تواصل معنا</button>
                         </li>
                         <li className="nav-item">
-                                <button className="nav-link">دليل الإستخدام</button>
+                            <button className="nav-link">دليل الإستخدام</button>
                         </li>
                         <li className="nav-item me-4">
                             <button className="nav-link">الرئيسية</button>
