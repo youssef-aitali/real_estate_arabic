@@ -5,7 +5,7 @@ function Sidebar() {
     return (
         <div className="bg-light sidebar p-5">
            <h5>
-              تفاصيل القطع الأرضية
+              Parcels details
            </h5>
         </div>
       );

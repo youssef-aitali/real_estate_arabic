@@ -63,8 +63,8 @@ class App extends React.Component {
       <div className="containerBox">
         <Navbar showSignUpModal={this.showSignUpModal} currentUser={this.state.currentUser}/>
         { this.state.isSignUpModal ? <SignUpSignIn hideSignUpModal={this.hideSignUpModal} /> : null }
-        <MapView />
         <Sidebar />
+        <MapView />
       </div>
     );
 

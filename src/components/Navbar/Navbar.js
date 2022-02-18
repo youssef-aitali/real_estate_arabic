@@ -16,19 +16,19 @@ const Navbar = ({ showSignUpModal, currentUser }) => {
                         <li className="nav-item">
                             {
                                 currentUser ?
-                                <button className="nav-link" onClick = {() => auth.signOut()}>تسجيل الخروج</button>
+                                <button className="nav-link" onClick = {() => auth.signOut()}>Sign out</button>
                                 :
-                                <button className="nav-link" onClick={showSignUpModal}>تسجيل الدخول</button>
+                                <button className="nav-link" onClick={showSignUpModal}>Sign in/Register</button>
                             }
                         </li>
                         <li className="nav-item">
-                            <button className="nav-link">تواصل معنا</button>
+                            <button className="nav-link">Contact us</button>
                         </li>
                         <li className="nav-item">
-                            <button className="nav-link">دليل الإستخدام</button>
+                            <button className="nav-link">User Guide</button>
                         </li>
-                        <li className="nav-item me-4">
-                            <button className="nav-link">الرئيسية</button>
+                        <li className="nav-item">
+                            <button className="nav-link">Home</button>
                         </li>
                     </ul>
                 </div>

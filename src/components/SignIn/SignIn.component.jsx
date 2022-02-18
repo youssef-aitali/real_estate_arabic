@@ -31,7 +31,7 @@ class SignIn extends React.Component {
     render() {
         return (
             <div>
-                <h4>الدخول إلى الحساب</h4>
+                <h4>Sign in</h4>
                     <form onSubmit={this.handleSubmit}>
                         <FormInput
                                     name='email'
@@ -39,7 +39,7 @@ class SignIn extends React.Component {
                                     className="form-control"
                                     handleChange={this.handleChange}
                                     value={this.state.email}
-                                    label="البريد الإلكتروني :"
+                                    label="Email :"
                                     required    
                         />
                         <FormInput
@@ -48,12 +48,12 @@ class SignIn extends React.Component {
                                     className="form-control"
                                     handleChange={this.handleChange}
                                     value={this.state.password}
-                                    label="الرقم السري :"
+                                    label="Password :"
                                     required
                         />
                         <div className="buttons">
-                            <button type="submit" className="btn btn-primary">الدخول</button>
-                            <button onClick={signInWithGoogle} className="btn btn-secondary">الدخول بواسطة غوغل</button>
+                            <button type="submit" className="btn btn-primary">Continue</button>
+                            <button onClick={signInWithGoogle} className="btn btn-secondary">Continue with Google</button>
                         </div>
                     </form>
             </div>

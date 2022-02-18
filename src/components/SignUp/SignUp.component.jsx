@@ -25,7 +25,7 @@ class SignUp extends React.Component {
         const {displayName, email, password, confirmPassword} = this.state;
         
         if(password !== confirmPassword) {
-            alert("الأرقام السرية غير متطابقة");
+            alert("Passwords dont't match");
             return;
         }
 
@@ -52,7 +52,7 @@ class SignUp extends React.Component {
     render() {
         return (
             <div>
-                <h4>إنشاء حساب جديد</h4> 
+                <h4>Register</h4> 
                     <form onSubmit={this.handleSubmit}>
                         <FormInput
                                     name='displayName'
@@ -60,7 +60,7 @@ class SignUp extends React.Component {
                                     className="form-control"
                                     handleChange={this.handleChange}
                                     value={this.state.displayName}
-                                    label="إسم المستخدم:"
+                                    label="Username :"
                                     required    
                         />
                         <FormInput
@@ -69,7 +69,7 @@ class SignUp extends React.Component {
                                     className="form-control"
                                     handleChange={this.handleChange}
                                     value={this.state.email}
-                                    label="البريد الإلكتروني:"
+                                    label="Email :"
                                     required    
                         />
                         <FormInput
@@ -78,7 +78,7 @@ class SignUp extends React.Component {
                                     className="form-control"
                                     handleChange={this.handleChange}
                                     value={this.state.password}
-                                    label="الرقم السري:"
+                                    label="Password :"
                                     required    
                         />
                         <FormInput
@@ -87,10 +87,12 @@ class SignUp extends React.Component {
                                     className="form-control"
                                     handleChange={this.handleChange}
                                     value={this.state.confirmPassword}
-                                    label="تأكيد الرقم السري:"
+                                    label="Confirm Password :"
                                     required    
                         />
-                        <button type="submit" className="btn btn-primary">التسجيل</button>
+                        <div className="buttons">
+                            <button type="submit" className="btn btn-primary">Continue</button>
+                        </div>
                     </form>
             </div>
             
